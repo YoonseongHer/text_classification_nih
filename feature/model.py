@@ -28,6 +28,7 @@ def train_model(model, train_loader, val_loader, lr, epochs, device, model_dir):
     training_stats = []
     best_acc = 0
     best_loss = 100
+    model.to(device)
     for epoch in range(epochs):
         print("")
         print('='*30 + ' Epoch {:} / {:} '.format(epoch + 1, epochs)+ '='*30)
@@ -41,7 +42,7 @@ def train_model(model, train_loader, val_loader, lr, epochs, device, model_dir):
             b_labels = batch['label'].to(device)
 
             model.zero_grad()        
-            loss, logits = model(b_input_ids, 
+            loss, logits = model(b_input_ids,
                                  token_type_ids=None, 
                                  attention_mask=b_input_mask, 
                                  labels=b_labels)[:]
@@ -112,7 +113,7 @@ def train_model(model, train_loader, val_loader, lr, epochs, device, model_dir):
             best_loss = avg_val_loss
             # save(model.state_dict(),
             #      model_dir+'best_model-epoch-{:}-loss-{:4}.pt'.format(epoch+1,best_loss))
-            save(model.state_dict(),
+            save(model,
                  model_dir+'best_model.pt')
 
     print("")
@@ -159,3 +160,32 @@ def flat_accuracy(preds, labels):
         pred_flat = np.argmax(preds, axis=1).flatten()
         labels_flat = labels.flatten()
         return np.sum(pred_flat == labels_flat) / len(labels_flat)
+    
+def test_model(model, test_loader, device):
+    model.eval()
+    model.to(device)
+    predictions = []
+    true_labels = []
+    for batch in tqdm(test_loader):
+        b_input_ids = batch['input_ids'].to(device)
+        b_input_mask = batch['attention_mask'].to(device)
+        b_labels = batch['label'].to('cpu')
+
+        with torch.no_grad():
+            outputs = model(b_input_ids,
+                            token_type_ids=None,
+                            attention_mask=b_input_mask)
+        logits = outputs[0]
+        logits = logits.detach().cpu().numpy()
+        label_ids = b_labels.to('cpu').numpy()
+        predictions.append(logits)
+        true_labels.append(b_labels)
+    flat_predictions = np.concatenate(predictions, axis=0)
+    flat_predictions = np.argmax(flat_predictions, axis=1).flatten()
+    flat_true_labels = np.concatenate(true_labels, axis=0)
+    return flat_true_labels, flat_predictions
+
+def tokenizer_fit_model(model):
+    if model.__class__.__name__ == 'BertForSequenceClassification':
+        tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
+    return tokenizer

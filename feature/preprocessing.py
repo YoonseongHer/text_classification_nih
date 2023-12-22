@@ -14,8 +14,12 @@ def label_encoding(labels):
     encoding_labels = le.fit_transform(labels)
     return encoding_labels, le.classes_
 
-def data_preprocessing(df):
+def data_preprocessing(df, le=[]):
     processed_df = df.copy()
     processed_df['data'] = processed_df['data'].apply(text_cleansing)
-    processed_df['label'], label_class = label_encoding(processed_df['label'])
+    if le:
+        processed_df['label'] = [le.index(label) for label in processed_df['label']]
+        label_class = le
+    else:
+        processed_df['label'], label_class = label_encoding(processed_df['label'])
     return processed_df, label_class
