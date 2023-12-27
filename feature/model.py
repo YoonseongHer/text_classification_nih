@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, BertForSequenceClassification
+from transformers import AutoTokenizer, BertForSequenceClassification, ElectraForSequenceClassification, AutoModelForMaskedLM
 from transformers import AdamW, get_linear_schedule_with_warmup
 from torch import nn, no_grad, save
 from tqdm import tqdm
@@ -13,6 +13,15 @@ def import_model_tokenizer(num_labels, name='bert'):
         tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
         model = BertForSequenceClassification.from_pretrained("monologg/kobert",
                                                               num_labels = num_labels)
+    elif name == 'electra':
+        name = 'monologg/koelectra-base-v3-discriminator'
+        tokenizer = AutoTokenizer.from_pretrained(name, TOKENIZERS_PARALLELISM=False)
+        model = ElectraForSequenceClassification.from_pretrained(name, num_labels=num_labels)
+    
+    elif name == 'roberta':
+        tokenizer = AutoTokenizer.from_pretrained("klue/roberta-large")
+        model = AutoModelForMaskedLM.from_pretrained("klue/roberta-large")
+        
     return model, tokenizer
 
 def train_model(model, train_loader, val_loader, lr, epochs, device, model_dir):
