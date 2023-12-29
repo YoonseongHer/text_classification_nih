@@ -18,7 +18,8 @@ def data_preprocessing(df, le=[]):
     processed_df = df.copy()
     processed_df['data'] = processed_df['data'].apply(text_cleansing)
     if le:
-        processed_df['label'] = [le.index(label) for label in processed_df['label']]
+        if 'label' in processed_df.columns:
+            processed_df['label'] = [le.index(label) for label in processed_df['label']]
         label_class = le
     else:
         processed_df['label'], label_class = label_encoding(processed_df['label'])

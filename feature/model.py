@@ -195,6 +195,11 @@ def test_model(model, test_loader, device):
     return flat_true_labels, flat_predictions
 
 def tokenizer_fit_model(model):
-    if model.__class__.__name__ == 'BertForSequenceClassification':
+    model_type = model.__class__.__name__
+    if model_type == 'BertForSequenceClassification':
         tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
+    elif model_type == 'ElectraForSequenceClassification':
+        tokenizer = AutoTokenizer.from_pretrained('monologg/koelectra-base-v3-discriminator')
+    elif model_type == 'RobertaForSequenceClassification':
+        tokenizer = AutoTokenizer.from_pretrained("klue/roberta-large")
     return tokenizer
