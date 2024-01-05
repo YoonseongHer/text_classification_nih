@@ -19,6 +19,7 @@ warnings.filterwarnings(action="ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 args = parser_args()
+os.makedirs(args.save_dir, exist_ok=True)
 device = args.device
 model = torch.load(args.model_path,
                    map_location=device)
@@ -38,3 +39,7 @@ plot_confusion_matrix(cm           = mc,
                       target_names = le,
                       title        = "Confusion Matrix",
                       save_dir= args.save_dir)
+data['predict'] = flat_predictions
+data['label'] = data['label'].apply(lambda x: le[x])
+data['predict'] = data['predict'].apply(lambda x: le[x])
+data.to_csv(args.save_dir+'test_result.csv',index=False)

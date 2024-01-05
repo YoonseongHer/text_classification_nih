@@ -4,3 +4,5 @@ test/*
 data/*
 model/*
 feature/__pycache__/*
+result/*
+

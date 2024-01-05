@@ -12,6 +12,7 @@ warnings.filterwarnings(action="ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 args = parser_args()
+os.makedirs(args.model_dir,exist_ok=True)
 data = pd.read_csv(args.data_dir)
 data, label_class = data_preprocessing(data)
 

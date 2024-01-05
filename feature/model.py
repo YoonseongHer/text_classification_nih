@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, BertForSequenceClassification, ElectraForSequenceClassification, AutoModelForMaskedLM
+from transformers import AutoTokenizer, BertForSequenceClassification, ElectraForSequenceClassification, RobertaForSequenceClassification
 from transformers import AdamW, get_linear_schedule_with_warmup
 from torch import nn, no_grad, save
 from tqdm import tqdm
@@ -20,7 +20,8 @@ def import_model_tokenizer(num_labels, name='bert'):
     
     elif name == 'roberta':
         tokenizer = AutoTokenizer.from_pretrained("klue/roberta-large")
-        model = AutoModelForMaskedLM.from_pretrained("klue/roberta-large")
+        model = RobertaForSequenceClassification.from_pretrained("klue/roberta-large",
+                                                                num_labels=num_labels)
         
     return model, tokenizer
 
@@ -49,12 +50,13 @@ def train_model(model, train_loader, val_loader, lr, epochs, device, model_dir):
             b_input_ids = batch['input_ids'].to(device)
             b_input_mask = batch['attention_mask'].to(device)
             b_labels = batch['label'].to(device)
-
-            model.zero_grad()        
+            
+            model.zero_grad()
             loss, logits = model(b_input_ids,
                                  token_type_ids=None, 
                                  attention_mask=b_input_mask, 
                                  labels=b_labels)[:]
+                
             total_train_loss += loss.item()
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 1.0)
