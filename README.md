@@ -6,8 +6,12 @@
     python == 3.9.16
     torch == 1.10.1
     transformers == 4.31.0
+    
 ### TRAIN model
     python3 train.py --data_dir [data_dir] --kfold [fold_num] --model_dir [model_save_dir] --model [model type]
 
 ### TEST model
     python3 test.py --model_path [model_dir] --device [device] --data_dir [data_dir] --le_path [labelencoder_dir] --save_dir [result_save_dir]
+
+### predict model
+    python3 predict.py --model_path [model_dir] --device [device] --data_dir [data_dir] --le_path [labelencoder_dir] --save_dir [result_save_dir]
