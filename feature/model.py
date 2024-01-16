@@ -8,8 +8,6 @@ import datetime
 import numpy as np
 from sklearn.metrics import f1_score
 
-torch.multiprocessing.freeze_support()
-
 def import_model_tokenizer(num_labels, name='bert'):
     if name == 'bert':
         tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")

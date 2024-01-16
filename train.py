@@ -7,7 +7,8 @@ from feature.args import parser_args
 from feature.model import import_model_tokenizer, train_model
 from feature.dataloader import Custom_Dataset
 from feature.preprocessing import data_preprocessing
-
+from torch.multiprocessing import freeze_support
+freeze_support()
 warnings.filterwarnings(action="ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
