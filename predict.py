@@ -15,24 +15,26 @@ from feature.args import parser_args
 from feature.util import plot_confusion_matrix
 import torch
 
-warnings.filterwarnings(action="ignore")
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+if __name__=='__main__':
+    freeze_support()
+    warnings.filterwarnings(action="ignore")
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-args = parser_args()
-os.makedirs(args.save_dir,exist_ok=True)
-device = args.device
-model = torch.load(args.model_path,
-                   map_location=device)
-tokenizer = tokenizer_fit_model(model)
-data = pd.read_csv(args.data_dir)
+    args = parser_args()
+    os.makedirs(args.save_dir,exist_ok=True)
+    device = args.device
+    model = torch.load(args.model_path,
+                       map_location=device)
+    tokenizer = tokenizer_fit_model(model)
+    data = pd.read_csv(args.data_dir)
 
-with open(args.le_path,'rb') as f:
-    le = pickle.load(f).tolist()
-    
-data, label_class = data_preprocessing(data,le)
-test_loader = Custom_Dataset(data,tokenizer).data_loader(512,1,1)
-flat_true_labels, flat_predictions = test_model(model, test_loader, device)
-data['predict'] = flat_predictions
-data['label'] = data['label'].apply(lambda x: le[x])
-data['predict'] = data['predict'].apply(lambda x: le[x])
-data.to_csv(args.save_dir+'predict_result.csv', index=False)
+    with open(args.le_path,'rb') as f:
+        le = pickle.load(f).tolist()
+
+    data, label_class = data_preprocessing(data,le)
+    test_loader = Custom_Dataset(data,tokenizer).data_loader(512,1,1)
+    flat_true_labels, flat_predictions = test_model(model, test_loader, device)
+    data['predict'] = flat_predictions
+    data['label'] = data['label'].apply(lambda x: le[x])
+    data['predict'] = data['predict'].apply(lambda x: le[x])
+    data.to_csv(args.save_dir+'predict_result.csv', index=False)
