@@ -13,6 +13,7 @@ from feature.dataloader import Custom_Dataset
 from feature.preprocessing import data_preprocessing
 from feature.args import parser_args
 from feature.util import plot_confusion_matrix
+import torch
 from torch.multiprocessing import freeze_support
 
 if __name__=='__main__':
